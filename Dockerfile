@@ -79,7 +79,7 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     'beautifulsoup4==4.14.3' \
     'lxml==6.0.2' \
     # Web scraping
-    'playwright==1.58.0' \
+    'playwright==1.58.0'
 
 # ── Playwright browsers (for web agent capabilities) ──────────
 RUN python3 -m playwright install chromium --with-deps || true
