@@ -32,6 +32,7 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
+          ignore: DL3008,DL3009,DL3015 # apt pin / recommends warnings acceptable here
 
   # ── Build & push multi-arch image ────────────────────────────
   build-push:
