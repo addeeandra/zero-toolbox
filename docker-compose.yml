@@ -1,0 +1,61 @@
+name: zeroclaw-toolbox
+
+# ─────────────────────────────────────────────────────────────
+# Usage:
+#   Gateway (persistent):    docker compose up -d zeroclaw-gateway
+#   One-shot agent query:    docker compose run --rm zeroclaw-agent -m "Hello"
+#   Interactive agent REPL:  docker compose run --rm zeroclaw-agent
+#   Shell inside toolbox:    docker compose run --rm zeroclaw-shell
+# ─────────────────────────────────────────────────────────────
+
+x-zeroclaw-base: &zeroclaw-base
+  image: ghcr.io/${GITHUB_REPOSITORY:-addeeandra/zero-toolbox}:latest
+  build:
+    context: .
+    dockerfile: Dockerfile
+  volumes:
+    - zeroclaw-data:/zeroclaw-data
+    - ./config:/zeroclaw-data/.zeroclaw
+  env_file:
+    - .env
+  restart: unless-stopped
+
+services:
+
+  # ── Gateway: long-running mode ───────────────────────────────
+  zeroclaw-gateway:
+    <<: *zeroclaw-base
+    container_name: zeroclaw-gateway
+    command: daemon
+    ports:
+      - "${ZEROCLAW_GATEWAY_PORT:-42617}:42617"
+    healthcheck:
+      test: ["CMD", "zeroclaw", "status"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ── Agent: ephemeral one-shot / interactive mode ─────────────
+  zeroclaw-agent:
+    <<: *zeroclaw-base
+    container_name: zeroclaw-agent
+    command: agent
+    restart: "no"
+    stdin_open: true
+    tty: true
+    profiles: ["agent", "cli"]
+
+  # ── Shell: bare shell for debugging ──────────────────────────
+  zeroclaw-shell:
+    <<: *zeroclaw-base
+    container_name: zeroclaw-shell
+    entrypoint: /bin/bash
+    restart: "no"
+    stdin_open: true
+    tty: true
+    profiles: ["cli"]
+
+volumes:
+  zeroclaw-data:
+    driver: local

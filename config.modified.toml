@@ -1,0 +1,15 @@
+[autonomy]
+workspace_only = false
+allowed_commands = [
+    "jq",
+    "yq",
+    "ripgrep",
+    "tree",
+    "less",
+    "unzip",
+    "wget",
+    "gh",
+    "python3",
+    "npx",
+    "playwright",
+]
