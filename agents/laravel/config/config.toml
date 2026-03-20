@@ -1,0 +1,34 @@
+[autonomy]
+level = "full"
+workspace_only = false
+allowed_commands = [
+    "which",
+    "ls",
+    "find",
+    "jq",
+    "yq",
+    "ripgrep",
+    "tree",
+    "less",
+    "unzip",
+    "wget",
+    "gh",
+    "python3",
+    "npx",
+    "playwright",
+    "ssh-keygen",
+    "php",
+    "composer",
+    "vendor/bin/pest",
+    "vendor/bin/phpstan",
+]
+require_approval_for_medium_risk = false
+block_high_risk_commands = false
+
+[gateway]
+port = 42617
+host = "0.0.0.0"
+allow_public_bind = true
+
+[agent]
+max_tool_iterations = 25

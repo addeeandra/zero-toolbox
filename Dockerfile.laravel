@@ -1,0 +1,63 @@
+# ============================================================
+# zeroclaw-toolbox (laravel)
+# Extends zero-toolbox base image with Laravel development
+# environment (PHP 8.4, Composer, SQLite)
+# ============================================================
+FROM ghcr.io/addeeandra/zero-toolbox:latest
+
+# -- Use root to install additional tools ─────────────────────
+USER root
+
+# ── Build args ───────────────────────────────────────────────
+ARG DEBIAN_FRONTEND=noninteractive
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# ── PHP 8.4 + extensions (via sury.org PPA) ──────────────────
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        apt-transport-https \
+        ca-certificates \
+        gnupg2 \
+        lsb-release \
+    && curl -sSLo /tmp/debsuryorg-archive-keyring.gpg \
+        https://packages.sury.org/php/apt.gpg \
+    && install -D -m 644 /tmp/debsuryorg-archive-keyring.gpg \
+        /etc/apt/keyrings/debsuryorg-archive-keyring.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" \
+        > /etc/apt/sources.list.d/php.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        php8.4-cli \
+        php8.4-common \
+        # Database drivers
+        php8.4-sqlite3 \
+        php8.4-mysql \
+        php8.4-pgsql \
+        # String / encoding
+        php8.4-mbstring \
+        php8.4-xml \
+        php8.4-dom \
+        php8.4-intl \
+        php8.4-bcmath \
+        # HTTP / network
+        php8.4-curl \
+        # File handling
+        php8.4-zip \
+        php8.4-fileinfo \
+        # Image processing (GD)
+        php8.4-gd \
+        # Tokenizer & misc
+        php8.4-tokenizer \
+        php8.4-readline \
+        # SQLite CLI
+        sqlite3 \
+        libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Composer (latest stable) ──────────────────────────────────
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && composer --version
+
+USER 65534:65534
+WORKDIR /zeroclaw-data

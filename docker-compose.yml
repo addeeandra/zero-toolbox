@@ -14,8 +14,8 @@ x-zeroclaw-base: &zeroclaw-base
     context: .
     dockerfile: Dockerfile
   volumes:
-    - zeroclaw-data:/zeroclaw-data
     - ./config:/zeroclaw-data/.zeroclaw
+    - ./workspace:/zeroclaw-data/workspace
   env_file:
     - .env
   restart: unless-stopped
